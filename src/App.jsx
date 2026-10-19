@@ -55,6 +55,7 @@ export default function App() {
   const hasLoggedOpen = useRef(false);
 
   useEffect(() => {
+    if (!import.meta.env.DEV) return;
     if (hasLoggedOpen.current) return;
     hasLoggedOpen.current = true;
     logResponse("opened").catch(() => {});
@@ -87,7 +88,7 @@ export default function App() {
     setNoPosition({ x: nextX, y: nextY });
     setNoCount((count) => count + 1);
     setNoMessage(noMessages[noCount % noMessages.length]);
-    logResponse("no_attempt").catch(() => {});
+    if (import.meta.env.DEV) logResponse("no_attempt").catch(() => {});
   }
 
   function acceptInvite() {
@@ -103,7 +104,18 @@ export default function App() {
     setIsSendingMessage(true);
     setMessageSendError("");
     try {
-      await logResponse("yes", message);
+      if (import.meta.env.DEV) {
+        await logResponse("yes", message);
+      } else {
+        const formData = new FormData(event.currentTarget);
+        formData.set("form-name", "date-invitation");
+        const response = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(formData).toString(),
+        });
+        if (!response.ok) throw new Error("Could not submit the form.");
+      }
       setMessageDialogOpen(false);
       setScreen("success");
     } catch {
@@ -194,11 +206,18 @@ export default function App() {
         >
           ×
         </button>
-        <form onSubmit={sendInviteMessage}>
+        <form
+          name="date-invitation"
+          method="POST"
+          data-netlify="true"
+          onSubmit={sendInviteMessage}
+        >
+          <input type="hidden" name="form-name" value="date-invitation" />
           <h2 id="message-dialog-title">Send a little message 💌</h2>
           <label htmlFor="invite-message">Your message</label>
           <textarea
             id="invite-message"
+            name="message"
             value={messageDraft}
             onChange={(event) => setMessageDraft(event.target.value)}
             maxLength={500}

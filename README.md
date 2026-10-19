@@ -20,8 +20,12 @@ While the Vite development server is running, invitation opens and responses are
 printed in the terminal and appended to `logs/responses.log`. The log records
 timestamps and event types (`opened`, `no_attempt`, and `yes`). A `yes` entry
 also includes the message submitted in the dialog. No visitor identity is
-collected. This file-based logger is for local development; production hosting
-needs a backend endpoint to collect responses.
+collected. This file-based logger is for local development only.
+
+For Netlify deployments, enable **Forms > Form detection** in the site dashboard
+and redeploy. The `date-invitation` form submissions, including the message,
+will then appear under **Forms > Submissions**. Configure a submission
+notification there if you want the responses emailed to you.
 
 ## Build for production
 
