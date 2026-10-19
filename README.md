@@ -1,0 +1,37 @@
+# Cute Date Invitation 💙
+
+A small React + Vite website with three screens:
+1. Welcome screen
+2. Date invitation with a playful No button
+3. Celebration screen
+
+## Run locally
+
+Requirements: Node.js 18+ recommended.
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local URL printed by Vite, usually `http://localhost:5173`.
+
+While the Vite development server is running, invitation opens and responses are
+printed in the terminal and appended to `logs/responses.log`. The log records
+timestamps and event types (`opened`, `no_attempt`, and `yes`). A `yes` entry
+also includes the message submitted in the dialog. No visitor identity is
+collected. This file-based logger is for local development; production hosting
+needs a backend endpoint to collect responses.
+
+## Build for production
+
+```bash
+npm run build
+npm run preview
+```
+
+## Notes
+- The bear illustration is built with CSS, so no external sticker assets are required.
+- The No button moves when hovered or clicked.
+- The project respects the `prefers-reduced-motion` accessibility setting.
+# cute-date
