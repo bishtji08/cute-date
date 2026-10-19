@@ -59,6 +59,31 @@ function Bear({ mood = "happy", className = "" }) {
   );
 }
 
+function FloatingMascot({ animal, className = "" }) {
+  return (
+    <div className={`floating-mascot mascot-${animal} ${className}`}>
+      <div className="mascot-face">
+        <span className="mascot-ear mascot-ear-left" />
+        <span className="mascot-ear mascot-ear-right" />
+        {animal === "panda" && (
+          <>
+            <span className="mascot-eye-patch mascot-eye-patch-left" />
+            <span className="mascot-eye-patch mascot-eye-patch-right" />
+          </>
+        )}
+        {animal === "dog" && <span className="mascot-spot" />}
+        <span className="mascot-cheek mascot-cheek-left" />
+        <span className="mascot-cheek mascot-cheek-right" />
+        <span className="mascot-eye mascot-eye-left" />
+        <span className="mascot-eye mascot-eye-right" />
+        <span className="mascot-muzzle" />
+        <span className="mascot-nose" />
+        <span className="mascot-mouth" />
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [screen, setScreen] = useState("welcome");
   const [noCount, setNoCount] = useState(0);
@@ -104,10 +129,26 @@ export default function App() {
     const buttonRect = button.getBoundingClientRect();
     const maxX = Math.max(0, areaRect.width - buttonRect.width - 12);
     const maxY = Math.max(0, areaRect.height - buttonRect.height - 12);
-    const nextX = Math.random() * maxX;
-    const nextY = Math.random() * maxY;
+    const minimumDistance = Math.min(150, Math.hypot(maxX, maxY) * 0.55);
+    let nextPosition = null;
+    let farthestPosition = noPosition;
+    let farthestDistance = -1;
+
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      const candidate = { x: Math.random() * maxX, y: Math.random() * maxY };
+      const distance = Math.hypot(candidate.x - noPosition.x, candidate.y - noPosition.y);
+      if (distance > farthestDistance) {
+        farthestPosition = candidate;
+        farthestDistance = distance;
+      }
+      if (distance >= minimumDistance) {
+        nextPosition = candidate;
+        break;
+      }
+    }
+
     const responseMessage = noMessages[noCount % noMessages.length];
-    setNoPosition({ x: nextX, y: nextY });
+    setNoPosition(nextPosition || farthestPosition);
     setNoCount((count) => count + 1);
     setNoMessage(responseMessage);
     if (import.meta.env.DEV) {
@@ -161,6 +202,12 @@ export default function App() {
     <main className="app-shell">
       <section className="invite-panel" aria-live="polite">
         <div className="watermark" aria-hidden="true">CUTIE</div>
+        <div className="floating-mascots" aria-hidden="true">
+          <FloatingMascot animal="panda" className="mascot-panda-one" />
+          <FloatingMascot animal="cat" className="mascot-cat-one" />
+          <FloatingMascot animal="dog" className="mascot-dog-one" />
+          <FloatingMascot animal="panda" className="mascot-panda-two" />
+        </div>
 
         {screen === "welcome" && (
           <div className="screen welcome-screen">
