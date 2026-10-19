@@ -6,6 +6,12 @@ const noMessages = [
   "Pleaseee 💗",
   "One tiny yes? 🐻",
   "I'll bring snacks!",
+  "I promise to be a good gurl! 💙",
+  "I can be your movie buddy! 🎬",
+  "I can be your cuddle buddy! 🥹",
+  "I can be your shopping buddy! 🛍️",
+  "I can be your gaming buddy! 🎮",
+  "I can be your study buddy! 📚", 
 ];
 
 async function logResponse(event, message) {
@@ -67,7 +73,6 @@ export default function App() {
   const noButtonRef = useRef(null);
   const messageDialogRef = useRef(null);
   const hasLoggedOpen = useRef(false);
-  const hasSubmittedNoResponse = useRef(false);
 
   useEffect(() => {
     if (!import.meta.env.DEV) return;
@@ -105,11 +110,8 @@ export default function App() {
     setNoMessage(noMessages[noCount % noMessages.length]);
     if (import.meta.env.DEV) {
       logResponse("no_attempt").catch(() => {});
-    } else if (!hasSubmittedNoResponse.current) {
-      hasSubmittedNoResponse.current = true;
-      submitNetlifyResponse("no").catch(() => {
-        hasSubmittedNoResponse.current = false;
-      });
+    } else {
+      submitNetlifyResponse("no", "No button attempt").catch(() => {});
     }
   }
 
@@ -150,15 +152,16 @@ export default function App() {
             <h1>Yeeey! Finally</h1>
             <Bear mood="happy" />
             <button className="button button-primary welcome-button" onClick={() => setScreen("question")}>
-              Let's Fix a Movie Day🎬
+            Question Time! 💌
             </button>
-            <p className="micro-copy">A tiny question for you 💙</p>
+            <p className="micro-copy">A tiny question for you💙</p>
+            <p className="micro-copy">without answers don't go back</p>
           </div>
         )}
 
         {screen === "question" && (
           <div className="screen question-screen">
-             <h1>Hey Lilly!</h1>
+             <h1>Heyy Lilly!</h1>
             <h1>Do you wanna go out with me?</h1>
             <Bear mood="pleading" />
             <div className="button-play-area" ref={playAreaRef}>
@@ -177,7 +180,7 @@ export default function App() {
               </button>
             </div>
             <p className="no-message" role="status">{noMessage}</p>
-            <p className="micro-copy question-hint">the blue button is a little shy.</p>
+            <p className="micro-copy question-hint">the blue button is a little shy like you!</p>
           </div>
         )}
 

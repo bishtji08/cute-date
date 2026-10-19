@@ -24,7 +24,8 @@ collected. This file-based logger is for local development only.
 
 For Netlify deployments, enable **Forms > Form detection** in the site dashboard
 and redeploy. The `date-invitation` submissions include a `response` value
-(`yes` or the first `no` attempt) and, for `yes`, the message. They appear under
+(`yes` or each `no` attempt) and a message value. Yes submissions contain the
+visitor's message; No attempts are labeled `No button attempt`. They appear under
 **Forms > Submissions**. Configure a submission notification there if you want
 the responses emailed to you.
 
