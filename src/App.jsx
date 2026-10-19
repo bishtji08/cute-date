@@ -17,6 +17,20 @@ async function logResponse(event, message) {
   if (!response.ok) throw new Error("Could not save your message.");
 }
 
+async function submitNetlifyResponse(responseType, message = "") {
+  const body = new URLSearchParams({
+    "form-name": "date-invitation",
+    response: responseType,
+    message,
+  });
+  const response = await fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body.toString(),
+  });
+  if (!response.ok) throw new Error("Could not submit the response.");
+}
+
 function Bear({ mood = "happy", className = "" }) {
   return (
     <div className={`bear-wrap ${className}`} aria-label="Cute cartoon bear" role="img">
@@ -53,6 +67,7 @@ export default function App() {
   const noButtonRef = useRef(null);
   const messageDialogRef = useRef(null);
   const hasLoggedOpen = useRef(false);
+  const hasSubmittedNoResponse = useRef(false);
 
   useEffect(() => {
     if (!import.meta.env.DEV) return;
@@ -88,7 +103,14 @@ export default function App() {
     setNoPosition({ x: nextX, y: nextY });
     setNoCount((count) => count + 1);
     setNoMessage(noMessages[noCount % noMessages.length]);
-    if (import.meta.env.DEV) logResponse("no_attempt").catch(() => {});
+    if (import.meta.env.DEV) {
+      logResponse("no_attempt").catch(() => {});
+    } else if (!hasSubmittedNoResponse.current) {
+      hasSubmittedNoResponse.current = true;
+      submitNetlifyResponse("no").catch(() => {
+        hasSubmittedNoResponse.current = false;
+      });
+    }
   }
 
   function acceptInvite() {
@@ -107,14 +129,7 @@ export default function App() {
       if (import.meta.env.DEV) {
         await logResponse("yes", message);
       } else {
-        const formData = new FormData(event.currentTarget);
-        formData.set("form-name", "date-invitation");
-        const response = await fetch("/", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams(formData).toString(),
-        });
-        if (!response.ok) throw new Error("Could not submit the form.");
+        await submitNetlifyResponse("yes", message);
       }
       setMessageDialogOpen(false);
       setScreen("success");
@@ -213,6 +228,7 @@ export default function App() {
           onSubmit={sendInviteMessage}
         >
           <input type="hidden" name="form-name" value="date-invitation" />
+          <input type="hidden" name="response" value="yes" />
           <h2 id="message-dialog-title">Send a little message 💌</h2>
           <label htmlFor="invite-message">Your message</label>
           <textarea

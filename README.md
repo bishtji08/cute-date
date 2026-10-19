@@ -23,9 +23,10 @@ also includes the message submitted in the dialog. No visitor identity is
 collected. This file-based logger is for local development only.
 
 For Netlify deployments, enable **Forms > Form detection** in the site dashboard
-and redeploy. The `date-invitation` form submissions, including the message,
-will then appear under **Forms > Submissions**. Configure a submission
-notification there if you want the responses emailed to you.
+and redeploy. The `date-invitation` submissions include a `response` value
+(`yes` or the first `no` attempt) and, for `yes`, the message. They appear under
+**Forms > Submissions**. Configure a submission notification there if you want
+the responses emailed to you.
 
 ## Build for production
 
