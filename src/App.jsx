@@ -68,6 +68,7 @@ export default function App() {
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [messageDraft, setMessageDraft] = useState("");
   const [messageSendError, setMessageSendError] = useState("");
+  const [isSavingYesResponse, setIsSavingYesResponse] = useState(false);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const playAreaRef = useRef(null);
   const noButtonRef = useRef(null);
@@ -116,15 +117,28 @@ export default function App() {
     }
   }
 
-  function acceptInvite() {
+  async function acceptInvite() {
+    if (isSavingYesResponse) return;
     setMessageSendError("");
-    setMessageDialogOpen(true);
+    setIsSavingYesResponse(true);
+    try {
+      if (import.meta.env.DEV) {
+        await logResponse("yes", "Yes response");
+      } else {
+        await submitNetlifyResponse("yes", "Yes response");
+      }
+    } catch {
+      setMessageSendError("Your Yes response couldn't be saved. Please try again.");
+    } finally {
+      setIsSavingYesResponse(false);
+      setMessageDialogOpen(true);
+    }
   }
 
   async function sendInviteMessage(event) {
     event.preventDefault();
     const message = messageDraft.trim();
-    if (!message || isSendingMessage) return;
+    if (!message || isSendingMessage || isSavingYesResponse) return;
 
     setIsSendingMessage(true);
     setMessageSendError("");
@@ -176,8 +190,8 @@ export default function App() {
               >
                 No
               </button>
-              <button className="button button-yes" onClick={acceptInvite}>
-                Yes 💗
+              <button className="button button-yes" onClick={acceptInvite} disabled={isSavingYesResponse}>
+                {isSavingYesResponse ? "Saving..." : "Yes 💗"}
               </button>
             </div>
             <p className="no-message" role="status">{noMessage}</p>
