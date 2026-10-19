@@ -105,13 +105,14 @@ export default function App() {
     const maxY = Math.max(0, areaRect.height - buttonRect.height - 12);
     const nextX = Math.random() * maxX;
     const nextY = Math.random() * maxY;
+    const responseMessage = noMessages[noCount % noMessages.length];
     setNoPosition({ x: nextX, y: nextY });
     setNoCount((count) => count + 1);
-    setNoMessage(noMessages[noCount % noMessages.length]);
+    setNoMessage(responseMessage);
     if (import.meta.env.DEV) {
-      logResponse("no_attempt").catch(() => {});
+      logResponse("no_attempt", responseMessage).catch(() => {});
     } else {
-      submitNetlifyResponse("no", "No button attempt").catch(() => {});
+      submitNetlifyResponse("no", responseMessage).catch(() => {});
     }
   }
 
@@ -162,7 +163,7 @@ export default function App() {
         {screen === "question" && (
           <div className="screen question-screen">
              <h1>Heyy Lilly!</h1>
-            <h1>Do you wanna go out with me?</h1>
+            <h1>Do you wanna go out for a movie with me?</h1>
             <Bear mood="pleading" />
             <div className="button-play-area" ref={playAreaRef}>
               <button
